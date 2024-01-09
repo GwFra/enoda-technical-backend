@@ -2,45 +2,46 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BidsService {
+  private bids = [
+    { id: 1, owner: '', start: 111 },
+    { id: 2, owner: '1', start: 111 },
+  ];
 
-    private bids = [
-        { id: 1, owner: "", start: 111}
-    ]
+  private bidsHistory = [
+    { id: 1, history: [{ a: 1 }] },
+    { id: 2, history: [{ a: 1 }] },
+    { id: 3, history: [{ a: 1 }] },
+  ];
 
-    private bidsHistory = [
-        { id: 1, history: []},
-        { id: 2, history: []},
-        { id: 3, history: []},
-    ]
+  findBid(searchId: number, isHistorical = false) {
+    const searchObj = isHistorical ? this.bidsHistory : this.bids;
+    return searchObj.find(({ id }) => id === searchId);
+  }
 
-    findBid(searchId, isHistorical = false) {
-        const searchObj =  isHistorical ? this.bids : this.bidsHistory;
-        return searchObj.find(({id}) => id === searchId)
-    }
+  getBids() {
+    console.log('all bids');
+    return this.bids;
+  }
 
-    getBids() {
-        return this.bids
-    }
+  getSingleBid(searchId: number) {
+    console.log(searchId);
+    return this.findBid(searchId);
+  }
 
-    getSingleBid(searchId: number) {
-        return this.findBid(searchId);
-    }
+  getBidHistory(searchId: number) {
+    return this.findBid(searchId, true);
+  }
 
-    getBidHistory(searchId: number) {
-        return this.findBid(searchId, true);
-    }
+  createBid(bid) {
+    this.bids.push(bid);
+  }
 
-    createBid(bid) {
-        this.bids.push(bid)
-    }
-
-    placeBid(searchId: number, bid) {
-        const updatedBids = this.bidsHistory.map((existingBid) => {
-            if(existingBid.id === searchId) {
-                existingBid.history.push({...bid, time: Date.now()})
-            }
-        })
-        this.bidsHistory = updatedBids as any;
-    }
-
+  placeBid(searchId: number, bid) {
+    const updatedBids = this.bidsHistory.map((existingBid) => {
+      if (existingBid.id === searchId) {
+        existingBid.history.push({ ...bid, time: Date.now() });
+      }
+    });
+    this.bidsHistory = updatedBids as any;
+  }
 }

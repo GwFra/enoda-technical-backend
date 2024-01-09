@@ -3,27 +3,26 @@ import { BidsService } from './bids.service';
 
 @Controller('bids')
 export class BidsController {
-  constructor(private readonly bidsService: BidsService) {}
-
+  constructor(private readonly bidsService: BidsService) { }
   @Get()
-  allBids(): object {
+  findAll(): object {
     return this.bidsService.getBids();
   }
 
-  @Get(":id")
-  singleBid(@Param("id") searchId): object {
-    return this.bidsService.getSingleBid(searchId);
-  }
-
   @Get("history/:id")
-  singleBidHistory(@Param("id") searchId): object {
-    return this.bidsService.getBidHistory(searchId);
+  bidHistory(@Param("id") searchId: string) {
+    return this.bidsService.getBidHistory(parseInt(searchId));
   }
 
+  @Get(':id')
+  findOne(@Param("id") id: string) {
+    return this.bidsService.getSingleBid(parseInt(id));
+  }
+  
   @Put()
   createBid(@Body() body) {
     // extra decoration of things
-    const bid = { ...body, time: Date.now()};
+    const bid = { ...body, time: Date.now() };
     this.bidsService.createBid(bid)
   }
 
@@ -31,4 +30,4 @@ export class BidsController {
   placeBid(@Param("id") searchId, @Body() body) {
     this.bidsService.placeBid(searchId, body)
   }
-  }
+}
