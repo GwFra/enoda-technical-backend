@@ -30,4 +30,17 @@ export class BidsService {
         return this.findBid(searchId, true);
     }
 
+    createBid(bid) {
+        this.bids.push(bid)
+    }
+
+    placeBid(searchId: number, bid) {
+        const updatedBids = this.bidsHistory.map((existingBid) => {
+            if(existingBid.id === searchId) {
+                existingBid.history.push({...bid, time: Date.now()})
+            }
+        })
+        this.bidsHistory = updatedBids as any;
+    }
+
 }
