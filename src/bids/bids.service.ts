@@ -19,12 +19,10 @@ export class BidsService {
   }
 
   getBids() {
-    console.log('all bids');
     return this.bids;
   }
 
   getSingleBid(searchId: number) {
-    console.log(searchId);
     return this.findBid(searchId);
   }
 
