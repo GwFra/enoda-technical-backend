@@ -6,9 +6,10 @@ import { BidsController } from './bids/bids.controller';
 import { BidsService } from './bids/bids.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ListingsModule } from './listings/listings.module';
 
 @Module({
-  imports: [BidsModule, AuthModule, UsersModule],
+  imports: [BidsModule, AuthModule, UsersModule, ListingsModule],
   controllers: [AppController, BidsController],
   providers: [AppService, BidsService],
 })

@@ -1,39 +1,34 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Bid, BidHistory } from './types/bid';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
+import { Bid } from './types/bid';
 import { randomUUID } from 'crypto';
-import _ from 'lodash';
+import { ListingsService } from 'src/listings/listings.service';
 
 @Injectable()
 export class BidsService {
+  constructor(private readonly listingsService: ListingsService) {}
   private bids: Bid[] = [];
-  private bidsHistory: BidHistory[] = [];
 
-  getBids() {
-    return this.bids;
+  getBids(userId: number): Bid[] {
+    return this.bids.filter(({ bidderId }) => bidderId === userId);
   }
 
-  getSingleBid(searchId: string) {
-    return this.bids.find(({ id }) => id === searchId);
-  }
-
-  getBidHistory(bidderId: string) {
-    console.log(_.filter(this.bidsHistory, ['bidderId', bidderId]));
-  }
-
-  createBid(bid: Bid) {
-    this.bids.push(bid);
-  }
-
-  placeBid(bidId: string, bidderId: string) {
-    const exists = this.bids.find(({ id }) => id === bidId);
+  placeBid(listingId: string, bidderId: number): void {
+    const listings = this.listingsService.getListings();
+    const exists = listings.find(({ id }) => id === listingId);
     if (!exists) {
       throw new NotFoundException();
+    } else if (bidderId === exists.supplierId) {
+      throw new NotAcceptableException();
+    } else {
+      this.bids.push({
+        id: randomUUID(),
+        listingId,
+        bidderId,
+      });
     }
-    this.bidsHistory.push({
-      id: randomUUID(),
-      bidId,
-      bidderId,
-      time: Date.now(),
-    });
   }
 }
