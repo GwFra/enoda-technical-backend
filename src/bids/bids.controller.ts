@@ -10,8 +10,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { BidsService } from './bids.service';
-import { AuthGuard } from 'src/auth/auth.guard';
+// import { AuthGuard } from 'src/auth/auth.guard';
 import { randomUUID } from 'crypto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 // import { Bid } from './types/bid';
 
 @Controller('bids')
@@ -22,7 +23,7 @@ export class BidsController {
     return this.bidsService.getBids();
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('history')
   bidHistory(@Request() req) {
     return this.bidsService.getBidHistory(req.sub);
@@ -33,13 +34,13 @@ export class BidsController {
     return this.bidsService.getSingleBid(id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post(':id')
   placeBid(@Param() bidId: string, @Request() req) {
     this.bidsService.placeBid(bidId, req.sub);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put()
   createBid(@Body() body, @Request() req) {
     const { cost, start, end } = body;
