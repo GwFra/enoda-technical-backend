@@ -9,10 +9,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(username: string, password: string): Promise<any> {
+  async signIn(
+    username: string,
+    password: string,
+    isGoogle = false,
+  ): Promise<any> {
     const user = await this.usersService.findUser(username);
-    if (user?.password !== password) {
-      throw new UnauthorizedException();
+    if (!isGoogle) {
+      if (user?.password !== password) {
+        throw new UnauthorizedException();
+      }
     }
     const payload = { sub: user.id, username: user.username };
     return {
@@ -20,7 +26,15 @@ export class AuthService {
     };
   }
 
-  async registerUser() {
-    console.log('registering');
+  async registerUser(username, password) {
+    this.usersService.createUser(username, password);
+  }
+
+  async registerGoogleUser(username) {
+    this.usersService.createGoogleUser(username);
+  }
+
+  async checkUserExists(username) {
+    return this.usersService.findUser(username);
   }
 }

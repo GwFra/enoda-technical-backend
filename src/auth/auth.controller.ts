@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   Req,
   Request,
   UseGuards,
@@ -24,6 +25,11 @@ export class AuthController {
     return this.authService.signIn(signIn.username, signIn.password);
   }
 
+  @Put('signup')
+  signUp(@Body() signup) {
+    return this.authService.registerUser(signup.username, signup.password);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
@@ -37,8 +43,11 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req) {
-    console.log(req.user);
-    const token = await this.authService.signIn(req.user, '123');
-    console.log(token);
+    const exists = await this.authService.checkUserExists(req.user.email);
+    if (!exists) {
+      this.authService.registerGoogleUser(req.user.email);
+      return await this.authService.signIn(req.user.email, '', true);
+    }
+    return await this.authService.signIn(req.user.email, '', true);
   }
 }
