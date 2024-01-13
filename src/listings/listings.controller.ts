@@ -20,6 +20,11 @@ export class ListingsController {
     return this.listingsService.getListings();
   }
 
+  @Get('/user/:id')
+  findUserListing(@Param('id') id: string) {
+    return this.listingsService.getUserListings(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.listingsService.getSingleListing(id);
@@ -29,11 +34,12 @@ export class ListingsController {
   @Put()
   @HttpCode(201)
   createListing(@Body() body, @Request() req) {
-    const { cost, start, end } = body;
+    const { cost, start, end, quantity } = body;
     const listing = {
       id: randomUUID(),
       supplierId: req.user.userId,
       cost,
+      quantity,
       start,
       end: start + end,
     };

@@ -10,10 +10,14 @@ import { ListingsService } from 'src/listings/listings.service';
 @Injectable()
 export class BidsService {
   constructor(private readonly listingsService: ListingsService) {}
-  private bids: Bid[] = [];
+  private bids: Bid[] = [{ id: 1231, listingId: 1, bidderId: 1 }];
 
   getBids(userId: number): Bid[] {
     return this.bids.filter(({ bidderId }) => bidderId === userId);
+  }
+
+  getBidsForListing(searchId: string): Bid[] {
+    return this.bids.filter(({ listingId }) => listingId == searchId);
   }
 
   placeBid(listingId: string, bidderId: number): void {
