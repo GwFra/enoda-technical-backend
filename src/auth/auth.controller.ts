@@ -22,12 +22,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signIn) {
-    return this.authService.signIn(signIn.username, signIn.password);
+    return this.authService.signIn(signIn.email, signIn.password);
   }
 
   @Put('signup')
   signUp(@Body() signup) {
-    return this.authService.registerUser(signup.username, signup.password);
+    return this.authService.registerUser(signup.email, signup.password);
   }
 
   @UseGuards(JwtAuthGuard)

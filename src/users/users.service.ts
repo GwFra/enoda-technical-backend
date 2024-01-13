@@ -3,25 +3,25 @@ import { randomInt } from 'crypto';
 
 type Users = {
   id: number;
-  username: string;
+  email: string;
   password?: string;
 };
 
 @Injectable()
 export class UsersService {
   private readonly users: Users[] = [
-    { id: 1, username: 'admin', password: '123' },
+    { id: 1, password: '123', email: 'something@123.com' },
   ];
 
-  async findUser(username: string): Promise<any> {
-    return this.users.find((user) => user.username === username);
+  async findUser(email: string): Promise<any> {
+    return this.users.find((user) => user.email === email);
   }
 
-  async createUser(username: string, password: string) {
-    this.users.push({ id: randomInt(10), username, password });
+  async createUser(email: string, password: string) {
+    this.users.push({ id: randomInt(10), email, password });
   }
 
-  async createGoogleUser(username) {
-    this.users.push({ id: randomInt(10), username });
+  async createGoogleUser(email) {
+    this.users.push({ id: randomInt(10), email });
   }
 }
