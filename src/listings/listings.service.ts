@@ -27,6 +27,30 @@ export class ListingsService {
       start: Date.now(),
       end: Date.now(),
     },
+    {
+      id: 4,
+      supplierId: 1,
+      quantity: 19,
+      cost: 2000,
+      start: Date.now(),
+      end: Date.now(),
+    },
+    {
+      id: 5,
+      supplierId: 1000,
+      quantity: 19,
+      cost: 3000,
+      start: Date.now(),
+      end: Date.now(),
+    },
+    {
+      id: 6,
+      supplierId: 1000,
+      quantity: 19,
+      cost: 3000,
+      start: Date.now(),
+      end: Date.now(),
+    },
   ];
 
   getListings(): Listing[] {
