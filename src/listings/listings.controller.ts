@@ -27,19 +27,22 @@ export class ListingsController {
     return this.listingsService.getListings();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/offers')
-  getOffers(): Listing[] {
-    return this.bidsService.getOffers(1000);
+  getOffers(@Request() req): Listing[] {
+    return this.bidsService.getOffers(req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/offers/:id')
-  getListingOffers(@Param('id') id: string): Listing[] {
-    return this.bidsService.getOfferForListing(100, id);
+  getListingOffers(@Param('id') id: string, @Request() req): Listing[] {
+    return this.bidsService.getOfferForListing(req.user.userId, id);
   }
 
-  @Get('/user/:id')
-  findUserListing(@Param('id') id: string) {
-    return this.listingsService.getUserListings(id);
+  @UseGuards(JwtAuthGuard)
+  @Get('/user')
+  findUserListing(@Request() req) {
+    return this.listingsService.getUserListings(req.user.userId);
   }
 
   @Get(':id')

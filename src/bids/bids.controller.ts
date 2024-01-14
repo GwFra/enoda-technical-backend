@@ -2,28 +2,30 @@ import {
   Body,
   Controller,
   Get,
-  // UseGuards,
-  // Request,
+  Request,
   Put,
   HttpCode,
   Param,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import { BidsService } from './bids.service';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Bid } from './types/bid';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('bids')
 export class BidsController {
   constructor(private readonly bidsService: BidsService) {}
-  // @UseGuards(JwtAuthGuard)
-  // @Get()
-  // findAll(@Request() req): Bid[] {
-  //   return this.bidsService.getBids(req.user.userId);
-  // }
-
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(): Bid[] {
-    return this.bidsService.getBids(1);
+  findAll(@Request() req): Bid[] {
+    return this.bidsService.getBids(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id')
+  acceptOffer(@Param('id') id) {
+    this.bidsService.acceptOffer(id);
   }
 
   @Get(':id')
@@ -31,19 +33,11 @@ export class BidsController {
     return this.bidsService.getBidsForListing(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put()
   @HttpCode(201)
-  placeBid(@Body() body: { listingId }) {
-    console.log('hmm');
+  placeBid(@Body() body: { listingId }, @Request() req) {
     const { listingId } = body;
-    this.bidsService.placeBid(listingId, 1);
+    this.bidsService.placeBid(listingId, req.user.userId);
   }
 }
-
-// @UseGuards(JwtAuthGuard)
-// @Put()
-// @HttpCode(201)
-// placeBid(@Body() body: { listingId }, @Request() req) {
-//   const { listingId } = body;
-//   this.bidsService.placeBid(listingId, req.user.userId);
-// }

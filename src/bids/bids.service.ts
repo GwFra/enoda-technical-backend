@@ -3,12 +3,14 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
-  // UnauthorizedException,
+  ForbiddenException,
   forwardRef,
 } from '@nestjs/common';
 import { Bid } from './types/bid';
 import { randomUUID } from 'crypto';
 import { ListingsService } from 'src/listings/listings.service';
+
+let bids: Bid[] = [{ id: 1, listingId: 1, bidderId: 1 }];
 
 @Injectable()
 export class BidsService {
@@ -16,10 +18,9 @@ export class BidsService {
     @Inject(forwardRef(() => ListingsService))
     private readonly listingsService: ListingsService,
   ) {}
-  private bids: Bid[] = [{ id: 1231, listingId: 1, bidderId: 1 }];
 
   getBids(userId: number): Bid[] {
-    return this.bids.filter(({ bidderId }) => bidderId === userId);
+    return bids.filter(({ bidderId }) => bidderId === userId);
   }
 
   getOffers(userId: number) {
@@ -28,16 +29,30 @@ export class BidsService {
       throw new NotFoundException();
     } else {
       const allListingIds = userListings.map(({ id }) => id);
-      const allBids = this.bids.filter(({ listingId }) =>
+      const allBids = bids.filter(({ listingId }) =>
         allListingIds.includes(listingId),
       );
-      const allOffers = allBids.map(({ listingId, bidderId }) => {
+      const allOffers = allBids.map(({ listingId, bidderId, id, accepted }) => {
         return {
           ...userListings.find(({ id }) => id === listingId),
           bidderId,
+          bidId: id,
+          accepted,
         };
       });
       return allOffers;
+    }
+  }
+
+  acceptOffer(bidId: number) {
+    const selectedBid = bids.find(({ id }) => id == bidId);
+    if (selectedBid?.accepted) {
+      throw new NotAcceptableException();
+    } else {
+      const updatedBids = bids.map((bid) =>
+        bid.id == bidId ? { ...bid, accepted: true } : bid,
+      );
+      bids = updatedBids;
     }
   }
 
@@ -45,24 +60,24 @@ export class BidsService {
     const listing = this.listingsService.getSingleListing(searchListingId);
     if (!listing) {
       throw new NotFoundException();
-    }
-    // else if (userId === listing.supplierId) {
-    //   throw new UnauthorizedException();
-    // }
-    else {
-      const listingOffers = this.bids.filter(
+    } else if (userId === listing.supplierId) {
+      throw new ForbiddenException();
+    } else {
+      const listingOffers = bids.filter(
         ({ listingId }) => listingId == searchListingId,
       );
-      const mappedOffers = listingOffers.map(({ bidderId }) => ({
+      const mappedOffers = listingOffers.map(({ bidderId, id, accepted }) => ({
         ...listing,
         bidderId,
+        bidId: id,
+        accepted,
       }));
       return mappedOffers;
     }
   }
 
   getBidsForListing(searchId: string): Bid[] {
-    return this.bids.filter(({ listingId }) => listingId == searchId);
+    return bids.filter(({ listingId }) => listingId == searchId);
   }
 
   placeBid(listingId: string, bidderId: number): void {
@@ -71,9 +86,9 @@ export class BidsService {
     if (!exists) {
       throw new NotFoundException();
     } else if (bidderId === exists.supplierId) {
-      throw new NotAcceptableException();
+      throw new ForbiddenException();
     } else {
-      this.bids.push({
+      bids.push({
         id: randomUUID(),
         listingId,
         bidderId,
