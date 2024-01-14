@@ -7,17 +7,34 @@ import {
   Request,
   UseGuards,
   HttpCode,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { ListingsService } from './listings.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { BidsService } from 'src/bids/bids.service';
+import { Listing } from './types/listing';
 
 @Controller('listings')
 export class ListingsController {
-  constructor(private readonly listingsService: ListingsService) {}
+  constructor(
+    private readonly listingsService: ListingsService,
+    @Inject(forwardRef(() => BidsService)) private bidsService: BidsService,
+  ) {}
   @Get()
   findAll(): object {
     return this.listingsService.getListings();
+  }
+
+  @Get('/offers')
+  getOffers(): Listing[] {
+    return this.bidsService.getOffers(1000);
+  }
+
+  @Get('/offers/:id')
+  getListingOffers(@Param('id') id: string): Listing[] {
+    return this.bidsService.getOfferForListing(100, id);
   }
 
   @Get('/user/:id')

@@ -13,7 +13,7 @@ export class ListingsService {
     },
     {
       id: 2,
-      supplierId: 1000,
+      supplierId: 10,
       quantity: 19,
       cost: 100,
       start: Date.now(),
@@ -43,7 +43,7 @@ export class ListingsService {
     }
   }
 
-  getUserListings(userId: string): Listing[] {
+  getUserListings(userId): Listing[] {
     const userListings = this.listings.filter(
       ({ supplierId }) => supplierId == userId,
     );
