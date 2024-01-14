@@ -10,7 +10,11 @@ type Users = {
 @Injectable()
 export class UsersService {
   private readonly users: Users[] = [
-    { id: 1, password: '123', email: 'something@123.com' },
+    {
+      id: 1,
+      password: '$2a$10$LIDdJiYyeE.NYzOI0QSVSeyLZsdQrBpdmPVHLYbIgjd17tGX7WqCq',
+      email: 'something@123.com',
+    },
   ];
 
   async findUser(email: string): Promise<any> {
@@ -18,6 +22,7 @@ export class UsersService {
   }
 
   async createUser(email: string, password: string) {
+    // Change to something with more options
     this.users.push({ id: randomInt(10), email, password });
   }
 

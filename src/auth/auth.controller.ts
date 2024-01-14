@@ -22,7 +22,12 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signIn) {
-    return this.authService.signIn(signIn.email, signIn.password);
+    return this.authService.signIn(signIn.email);
+  }
+
+  @Post('login/token')
+  getToken(@Body() signIn) {
+    return this.authService.getToken(signIn.email, signIn.password);
   }
 
   @Put('signup')
@@ -33,7 +38,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    return req.user;
+    return req.user.email;
   }
 
   @Get('google')
@@ -46,8 +51,8 @@ export class AuthController {
     const exists = await this.authService.checkUserExists(req.user.email);
     if (!exists) {
       this.authService.registerGoogleUser(req.user.email);
-      return await this.authService.signIn(req.user.email, '', true);
+      return await this.authService.signIn(req.user.email, true);
     }
-    return await this.authService.signIn(req.user.email, '', true);
+    return await this.authService.signIn(req.user.email, true);
   }
 }

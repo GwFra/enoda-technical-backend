@@ -11,19 +11,29 @@ export class AuthService {
 
   async signIn(
     email: string,
-    password: string,
+    // password: string,
     isGoogle = false,
   ): Promise<any> {
     const user = await this.usersService.findUser(email);
-    if (!isGoogle) {
-      if (user?.password !== password) {
-        throw new UnauthorizedException();
-      }
+    if (isGoogle) {
+      const payload = { sub: user.id, email: user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
     }
-    const payload = { sub: user.id, email: user.email };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return user?.password;
+  }
+
+  async getToken(email: string, password: string) {
+    const user = await this.usersService.findUser(email);
+    if (password !== user?.password) {
+      throw new UnauthorizedException();
+    } else {
+      const payload = { sub: user.id, email: user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
+    }
   }
 
   async registerUser(email, password) {
