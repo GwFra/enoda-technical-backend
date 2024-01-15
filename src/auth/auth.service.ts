@@ -9,11 +9,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(
-    email: string,
-    // password: string,
-    isGoogle = false,
-  ): Promise<any> {
+  async signIn(email: string, isGoogle = false) {
     const user = await this.usersService.findUser(email);
     if (isGoogle) {
       const payload = { sub: user.id, email: user.email };
