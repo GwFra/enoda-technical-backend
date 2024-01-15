@@ -2,14 +2,16 @@ import {
   Body,
   Controller,
   Get,
-  UseGuards,
   Request,
   Put,
   HttpCode,
+  Param,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import { BidsService } from './bids.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Bid } from './types/bid';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('bids')
 export class BidsController {
@@ -18,6 +20,17 @@ export class BidsController {
   @Get()
   findAll(@Request() req): Bid[] {
     return this.bidsService.getBids(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:id')
+  acceptOffer(@Param('id') id) {
+    this.bidsService.acceptOffer(id);
+  }
+
+  @Get(':id')
+  getBids(@Param('id') id: string): Bid[] {
+    return this.bidsService.getBidsForListing(id);
   }
 
   @UseGuards(JwtAuthGuard)

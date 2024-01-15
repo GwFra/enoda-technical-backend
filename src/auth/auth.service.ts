@@ -10,31 +10,41 @@ export class AuthService {
   ) {}
 
   async signIn(
-    username: string,
-    password: string,
+    email: string,
+    // password: string,
     isGoogle = false,
   ): Promise<any> {
-    const user = await this.usersService.findUser(username);
-    if (!isGoogle) {
-      if (user?.password !== password) {
-        throw new UnauthorizedException();
-      }
+    const user = await this.usersService.findUser(email);
+    if (isGoogle) {
+      const payload = { sub: user.id, email: user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
     }
-    const payload = { sub: user.id, username: user.username };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    return user?.password;
   }
 
-  async registerUser(username, password) {
-    this.usersService.createUser(username, password);
+  async getToken(email: string, password: string) {
+    const user = await this.usersService.findUser(email);
+    if (password !== user?.password) {
+      throw new UnauthorizedException();
+    } else {
+      const payload = { sub: user.id, email: user.email };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
+    }
   }
 
-  async registerGoogleUser(username) {
-    this.usersService.createGoogleUser(username);
+  async registerUser(email, password) {
+    this.usersService.createUser(email, password);
   }
 
-  async checkUserExists(username) {
-    return this.usersService.findUser(username);
+  async registerGoogleUser(email) {
+    this.usersService.createGoogleUser(email);
+  }
+
+  async checkUserExists(email) {
+    return this.usersService.findUser(email);
   }
 }

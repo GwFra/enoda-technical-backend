@@ -4,6 +4,5 @@ export type Bid = {
   id: typeof RandomUUID;
   listingId: typeof RandomUUID;
   bidderId: number;
-  // cost?
-  // accepted?
+  accepted?: boolean;
 };
