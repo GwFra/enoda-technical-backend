@@ -1,8 +1,6 @@
-import { RandomUUID } from 'crypto';
-
-export type Bid = {
-  id: typeof RandomUUID;
-  listingId: typeof RandomUUID;
+export interface Bid {
+  id: string | number;
+  listingId: string | number;
   bidderId: number;
   accepted?: boolean;
-};
+}
