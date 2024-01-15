@@ -9,14 +9,17 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(
-    email: string,
-    // password: string,
-    isGoogle = false,
-  ): Promise<any> {
+  async signIn(email: string, isGoogle = false) {
     const user = await this.usersService.findUser(email);
     if (isGoogle) {
-      const payload = { sub: user.id, email: user.email };
+      let payload;
+      if (!user) {
+        this.registerGoogleUser(email);
+        const newUser = await this.checkUserExists(email);
+        payload = { sub: newUser.id, email: newUser.email };
+      } else {
+        payload = { sub: user.id, email: user.email };
+      }
       return {
         access_token: await this.jwtService.signAsync(payload),
       };

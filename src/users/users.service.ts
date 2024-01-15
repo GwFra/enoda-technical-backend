@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomInt } from 'crypto';
-
-type Users = {
-  id: number;
-  email: string;
-  password?: string;
-};
+import { Users } from './types/user';
 
 @Injectable()
 export class UsersService {
@@ -17,16 +12,15 @@ export class UsersService {
     },
   ];
 
-  async findUser(email: string): Promise<any> {
+  async findUser(email: string) {
     return this.users.find((user) => user.email === email);
   }
 
   async createUser(email: string, password: string) {
-    // Change to something with more options
-    this.users.push({ id: randomInt(10), email, password });
+    this.users.push({ id: randomInt(100), email, password });
   }
 
-  async createGoogleUser(email) {
-    this.users.push({ id: randomInt(10), email });
+  async createGoogleUser(email: string) {
+    this.users.push({ id: randomInt(100), email });
   }
 }

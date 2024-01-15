@@ -11,9 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// import { AuthGuard } from './auth.guard';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { GoogleOauthGuard } from './google-oauth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +20,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signIn) {
-    return this.authService.signIn(signIn.email);
+    return this.authService.signIn(signIn.email, signIn.isGoogle);
   }
 
   @Post('login/token')
@@ -42,12 +40,8 @@ export class AuthController {
   }
 
   @Get('google')
-  @UseGuards(GoogleOauthGuard)
-  googleAuth() {}
-
-  @Get('google/callback')
-  @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@Req() req) {
+  @UseGuards(JwtAuthGuard)
+  async googleAuth(@Req() req) {
     const exists = await this.authService.checkUserExists(req.user.email);
     if (!exists) {
       this.authService.registerGoogleUser(req.user.email);
